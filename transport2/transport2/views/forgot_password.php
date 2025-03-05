@@ -1,5 +1,10 @@
 <?php
 session_start();
+require 'vendor/autoload.php'; // Include PHPMailer autoload
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -26,17 +31,33 @@ if (isset($_POST['submit'])) {
         $stmt->bind_param("ss", $token, $email);
         $stmt->execute();
 
-        $reset_link = "http://localhost/transport/reset_password.php?token=" . $token;
-        
-        // Send email (you must configure mail settings)
-        $subject = "Password Reset Request";
-        $message_body = "Click the link to reset your password: " . $reset_link;
-        $headers = "From: your_email@example.com\r\nReply-To: your_email@example.com";
+        $reset_link = "http://localhost/finalyrproject/transport2/transport2/views/reset_password.php?token=" . $token;
 
-        if (mail($email, $subject, $message_body, $headers)) {
+        // Send email using PHPMailer
+        $mail = new PHPMailer(true);
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server
+            $mail->SMTPAuth = true;
+            $mail->Username = 'sarthakmulye42006@gmail.com'; // Replace with your email
+            $mail->Password = 'iyor sagl bulv ibxd'; // Replace with your email password
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+
+            // Recipients
+            $mail->setFrom('your_email@gmail.com', 'Your Name');
+            $mail->addAddress($email);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Password Reset Request';
+            $mail->Body = "Click the link to reset your password: <a href='$reset_link'>$reset_link</a>";
+
+            $mail->send();
             $message = "Password reset link has been sent to your email.";
-        } else {
-            $message = "Failed to send email. Please try again.";
+        } catch (Exception $e) {
+            $message = "Failed to send email. Error: " . $mail->ErrorInfo;
         }
     } else {
         $message = "No account found with this email.";
