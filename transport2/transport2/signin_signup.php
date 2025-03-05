@@ -205,6 +205,9 @@ $conn->close();
             <div class="toggle">
                 <p>Don't have an account? <a href="?signup">Sign Up</a></p>
             </div>
+            <div class="toggle">
+    <p><a href="forgot_password.php">Forgot Password?</a></p>
+</div>
         <?php else: ?>
             <!-- Sign-Up Form -->
             <h2>Sign Up</h2>
