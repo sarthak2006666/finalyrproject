@@ -31,7 +31,7 @@ if (isset($_POST['submit'])) {
         $stmt->bind_param("ss", $token, $email);
         $stmt->execute();
 
-        $reset_link = "http://localhost/finalyrproject/transport2/transport2/views/reset_password.php?token=" . $token;
+        $reset_link = "http://localhost/finalyrproject/transport2/transport2/reset_password.php?token=" . $token;
 
         // Send email using PHPMailer
         $mail = new PHPMailer(true);

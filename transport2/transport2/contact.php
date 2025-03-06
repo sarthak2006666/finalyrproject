@@ -1,16 +1,18 @@
 <?php
-// Start session
 session_start();
+require 'vendor/autoload.php'; // Include PHPMailer autoload
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 // Database connection
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "transport"; // Use your database name
+$dbname = "transport";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -19,7 +21,6 @@ if ($conn->connect_error) {
 $successMessage = "";
 $errorMessage = "";
 
-// Handle contact form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_contact'])) {
     $name = isset($_POST['name']) ? trim($_POST['name']) : "";
     $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : "";
@@ -30,11 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_contact'])) {
     $location = isset($_POST['location']) ? trim($_POST['location']) : "";
     $message = isset($_POST['message']) ? trim($_POST['message']) : "";
 
-    // Validate required fields
     if (empty($name) || empty($mobile) || empty($email) || empty($truck_type) || empty($goods_type)) {
         $errorMessage = "Please fill in all required fields.";
     } else {
-        // Insert into database
         $sql = "INSERT INTO contact_queries (name, mobile, email, company_name, truck_type, goods_type, location, message) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -43,24 +42,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_contact'])) {
         if ($stmt->execute()) {
             $successMessage = "Your message has been sent successfully!";
 
-            // Send email
-            $to = "your-email@example.com"; // Replace with your email
-            $subject = "New Contact Form Submission";
-            $email_message = "Name: $name\n";
-            $email_message .= "Mobile: $mobile\n";
-            $email_message .= "Email: $email\n";
-            $email_message .= "Company Name: $company_name\n";
-            $email_message .= "Truck Type: $truck_type\n";
-            $email_message .= "Goods Type: $goods_type\n";
-            $email_message .= "Location: $location\n";
-            $email_message .= "Message: $message\n";
+            // Send email using PHPMailer
+            $mail = new PHPMailer(true);
+            try {
+                // Server settings
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server
+                $mail->SMTPAuth = true;
+                $mail->Username = 'sarthakmulye42006@gmail.com'; // Replace with your email
+                $mail->Password = 'iyor sagl bulv ibxd'; // Replace with your email password
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
 
-            $headers = "From: no-reply@example.com"; // Replace with a valid sender email
+                // Recipients
+                $mail->setFrom('no-reply@example.com', 'No Reply');
+                $mail->addAddress('sarthakmulye42006@gmail.com'); // Replace with recipient email
 
-            if (mail($to, $subject, $email_message, $headers)) {
+                // Content
+                $mail->isHTML(false);
+                $mail->Subject = 'New Contact Form Submission';
+                $mail->Body = "Name: $name\nMobile: $mobile\nEmail: $email\nCompany Name: $company_name\nTruck Type: $truck_type\nGoods Type: $goods_type\nLocation: $location\nMessage: $message";
+
+                $mail->send();
                 $successMessage .= " An email has been sent with the details.";
-            } else {
-                $errorMessage = "Error sending email.";
+            } catch (Exception $e) {
+                $errorMessage = "Error sending email: " . $mail->ErrorInfo;
             }
         } else {
             $errorMessage = "Error inserting data: " . $stmt->error;
@@ -69,11 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_contact'])) {
     }
 }
 
-// Check if the user is logged in
-$is_logged_in = isset($_SESSION['user_id']); // Change 'user_id' to match your session variable
+$is_logged_in = isset($_SESSION['user_id']);
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
