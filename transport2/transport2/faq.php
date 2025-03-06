@@ -24,7 +24,7 @@
             top: 0;
             left: 0;
             width: 100%; /* Full width of the screen */
-            transition: background-color 0.3s ease; /* Smooth transition */
+            transition: background-color 3s ease; /* Smooth transition */
             box-sizing: border-box; /* Include padding in width calculation */
         }
 
