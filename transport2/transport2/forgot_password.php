@@ -70,13 +70,86 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <title>Forgot Password</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background: url('bg3.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 350px;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+p {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+button, input[type="email"] {
+    width: 100%;
+    height: 45px;
+}
+
+button {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #27ae60;
+}
+
+@media (max-width: 400px) {
+    .container {
+        width: 90%;
+    }
+}
+
+
+        </style>
 </head>
 <body>
-    <h2>Forgot Password</h2>
-    <p><?php echo $message; ?></p>
-    <form method="POST">
-        <input type="email" name="email" placeholder="Enter your email" required>
-        <button type="submit" name="submit">Send Reset Link</button>
-    </form>
+    <div class="container">
+        <h2>Forgot Password</h2>
+        <p><?php echo $message; ?></p>
+        <form method="POST">
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <button type="submit" name="submit">Send Reset Link</button>
+        </form>
+    </div>
 </body>
 </html>
+

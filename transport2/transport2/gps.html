@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truck Animation - Mumbai to Pune</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <style>
+        /* Center the container on the screen */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        /* Initial small container */
+        #map-container {
+            width: 300px;
+            height: 200px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative; /* For positioning the button */
+        }
+
+        /* Full-screen mode */
+        #map-container.full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Full-screen toggle button */
+        #fullscreen-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background-color: #0078A8;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #fullscreen-button:hover {
+            background-color: #005f87;
+        }
+
+        .leaflet-routing-container { display: none !important; } /* Hides right-side route details */
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+        <button id="fullscreen-button">Full Screen</button>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([19.0760, 72.8777], 10); // Mumbai as initial view
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Truck Icon (Using Local Image)
+        var truckIcon = L.icon({
+            iconUrl: 'box-truck.png', // Use the local image file
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+
+        // Truck Routes
+        var truckRoutes = [
+            [[19.0760, 72.8777], [18.5204, 73.8567]], // Mumbai to Pune
+            [[19.2000, 72.8500], [18.6000, 73.8000]], // Slightly different route
+            [[19.1000, 72.8800], [18.5400, 73.8500]],
+            [[19.0500, 72.9000], [18.5300, 73.8300]],
+            [[19.1200, 72.8600], [18.5100, 73.8700]]
+        ];
+
+        // Function to animate a truck along a route
+        function animateTruck(route) {
+            var marker = L.marker(route[0], { icon: truckIcon }).addTo(map);
+            var control = L.Routing.control({
+                waypoints: route.map(coord => L.latLng(coord[0], coord[1])),
+                createMarker: function() { return null; }, // Hide default markers
+                routeWhileDragging: false,
+                autoRoute: true,
+                show: false // Prevents the default routing UI from appearing
+            }).addTo(map);
+
+            control.on('routesfound', function(e) {
+                var routeCoordinates = e.routes[0].coordinates;
+                var index = 0;
+                function moveTruck() {
+                    if (index < routeCoordinates.length) {
+                        marker.setLatLng(routeCoordinates[index]);
+                        index++;
+                        setTimeout(moveTruck, 1000); // Adjust speed here (300ms for slower movement)
+                    }
+                }
+                moveTruck();
+            });
+        }
+
+        // Animate all trucks
+        truckRoutes.forEach(route => animateTruck(route));
+
+        // Toggle full-screen mode
+        var mapContainer = document.getElementById('map-container');
+        var fullscreenButton = document.getElementById('fullscreen-button');
+
+        fullscreenButton.addEventListener('click', function() {
+            mapContainer.classList.toggle('full-screen');
+
+            // Ensure the map resizes correctly
+            setTimeout(function() {
+                map.invalidateSize();
+                map.setView(map.getCenter(), map.getZoom()); // Re-center the map
+            }, 100); // Small delay to allow CSS transition to complete
+
+            // Update button text
+            if (mapContainer.classList.contains('full-screen')) {
+                fullscreenButton.textContent = 'Exit Full Screen';
+            } else {
+                fullscreenButton.textContent = 'Full Screen';
+            }
+        });
+    </script>
+</body>
+</html>

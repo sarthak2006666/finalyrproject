@@ -11,7 +11,9 @@ $dbname = "transport"; // Use your database name
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
-
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Initialize message variables
 $successMessage = "";
@@ -19,40 +21,58 @@ $errorMessage = "";
 
 // Handle contact form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_contact'])) {
-  echo "<pre>";
-  print_r($_POST); // Debugging: Print form data
-  echo "</pre>";
+    $name = isset($_POST['name']) ? trim($_POST['name']) : "";
+    $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : "";
+    $email = isset($_POST['email']) ? trim($_POST['email']) : "";
+    $company_name = isset($_POST['company_name']) ? trim($_POST['company_name']) : "";
+    $truck_type = isset($_POST['truck_type']) ? trim($_POST['truck_type']) : "";
+    $goods_type = isset($_POST['goods_type']) ? trim($_POST['goods_type']) : "";
+    $location = isset($_POST['location']) ? trim($_POST['location']) : "";
+    $message = isset($_POST['message']) ? trim($_POST['message']) : "";
 
-  $name = isset($_POST['name']) ? trim($_POST['name']) : "";
-  $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : "";
-  $email = isset($_POST['email']) ? trim($_POST['email']) : "";
-  $company_name = isset($_POST['company_name']) ? trim($_POST['company_name']) : "";
-  $truck_type = isset($_POST['truck_type']) ? trim($_POST['truck_type']) : "";
-  $goods_type = isset($_POST['goods_type']) ? trim($_POST['goods_type']) : "";
-  $location = isset($_POST['location']) ? trim($_POST['location']) : "";
-  $message = isset($_POST['message']) ? trim($_POST['message']) : "";
-
-  // Validate required fields
-  if (empty($name) || empty($mobile) || empty($email) || empty($truck_type) || empty($goods_type)) {
-    $errorMessage = "Please fill in all required fields.";
-  } else {
-    $sql = "INSERT INTO contact_queries (name, mobile, email, company_name, truck_type, goods_type, location, message) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssss", $name, $mobile, $email, $company_name, $truck_type, $goods_type, $location, $message);
-
-    if ($stmt->execute()) {
-      $successMessage = "Your message has been sent successfully!";
+    // Validate required fields
+    if (empty($name) || empty($mobile) || empty($email) || empty($truck_type) || empty($goods_type)) {
+        $errorMessage = "Please fill in all required fields.";
     } else {
-      $errorMessage = "Error inserting data: " . $stmt->error;
+        // Insert into database
+        $sql = "INSERT INTO contact_queries (name, mobile, email, company_name, truck_type, goods_type, location, message) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssssss", $name, $mobile, $email, $company_name, $truck_type, $goods_type, $location, $message);
+
+        if ($stmt->execute()) {
+            $successMessage = "Your message has been sent successfully!";
+
+            // Send email
+            $to = "your-email@example.com"; // Replace with your email
+            $subject = "New Contact Form Submission";
+            $email_message = "Name: $name\n";
+            $email_message .= "Mobile: $mobile\n";
+            $email_message .= "Email: $email\n";
+            $email_message .= "Company Name: $company_name\n";
+            $email_message .= "Truck Type: $truck_type\n";
+            $email_message .= "Goods Type: $goods_type\n";
+            $email_message .= "Location: $location\n";
+            $email_message .= "Message: $message\n";
+
+            $headers = "From: no-reply@example.com"; // Replace with a valid sender email
+
+            if (mail($to, $subject, $email_message, $headers)) {
+                $successMessage .= " An email has been sent with the details.";
+            } else {
+                $errorMessage = "Error sending email.";
+            }
+        } else {
+            $errorMessage = "Error inserting data: " . $stmt->error;
+        }
+        $stmt->close();
     }
-    $stmt->close();
-  }
 }
 
+// Check if the user is logged in
+$is_logged_in = isset($_SESSION['user_id']); // Change 'user_id' to match your session variable
 $conn->close();
 ?>
-
 
 
 <!DOCTYPE html>
@@ -406,6 +426,7 @@ $conn->close();
                 <li><a href="faq.php">FAQ</a></li>
                 <li><a href="contact.php">CONTACT US</a></li>
                 <li><a href="signin_signup.php">SIGN IN</a></li>
+                <li><a href="logout.php">LOG OUT</a></li>
       </ul>
     </nav>
   </header>
@@ -428,39 +449,42 @@ $conn->close();
         <?php endif; ?>
 
         <h2>Get in Touch</h2>
+        
 
-        <button onclick="showSignInMessage()">Sign in to Continue</button>
+        <button type="button" onclick="showSignInMessage()">Sign in to Continue</button>
 
-<input type="text" name="name" placeholder="Name" required disabled>
-<input type="tel" name="mobile" placeholder="Mobile No" required disabled>
-<input type="email" name="email" placeholder="Your Email" required disabled>
-<input type="text" name="company_name" placeholder="Company Name" disabled>
 
-<select name="truck_type" required disabled>
-  <option value="">Select Trucks Type</option>
-  <option value="Eicher 2119">Eicher 2119</option>
-  <option value="Eicher 2114">Eicher 2114</option>
-  <option value="Tata 1613">Tata 1613</option>
-  <option value="Eicher 21.10">Eicher 21.10</option>
-  <option value="Eicher 20.59">Eicher 20.59</option>
-  <option value="Eicher 21.59">Eicher 21.59</option>
-  <option value="Ashok Leyland Dost">Ashok Leyland Dost</option>
-  <option value="Tata 407">Tata 407</option>
+        <input type="text" name="name" placeholder="Name" required <?php echo !$is_logged_in ? 'disabled' : ''; ?>>
+<input type="tel" name="mobile" placeholder="Mobile No" required <?php echo !$is_logged_in ? 'disabled' : ''; ?>>
+<input type="email" name="email" placeholder="Your Email" required <?php echo !$is_logged_in ? 'disabled' : ''; ?>>
+<input type="text" name="company_name" placeholder="Company Name" <?php echo !$is_logged_in ? 'disabled' : ''; ?>>
+
+<select name="truck_type" required <?php echo !$is_logged_in ? 'disabled' : ''; ?>>
+    <option value="">Select Trucks Type</option>
+    <option value="Eicher 2119">Eicher 2119</option>
+    <option value="Eicher 2114">Eicher 2114</option>
+    <option value="Tata 1613">Tata 1613</option>
+    <option value="Eicher 21.10">Eicher 21.10</option>
+    <option value="Eicher 20.59">Eicher 20.59</option>
+    <option value="Eicher 21.59">Eicher 21.59</option>
+    <option value="Ashok Leyland Dost">Ashok Leyland Dost</option>
+    <option value="Tata 407">Tata 407</option>
 </select>
 
-<select name="goods_type" required disabled>
-  <option value="">Select Goods Type</option>
-  <option value="Electronics">Electronics</option>
-  <option value="Furniture">Furniture</option>
-  <option value="Construction Material">Construction Material</option>
-  <option value="Food Products">Food Products</option>
+<select name="goods_type" required <?php echo !$is_logged_in ? 'disabled' : ''; ?>>
+    <option value="">Select Goods Type</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Furniture">Furniture</option>
+    <option value="Construction Material">Construction Material</option>
+    <option value="Food Products">Food Products</option>
 </select>
 
-<input type="text" name="location" placeholder="Location" disabled>
-<textarea name="message" placeholder="Write message" disabled></textarea>
+<input type="text" name="location" placeholder="Location" <?php echo !$is_logged_in ? 'disabled' : ''; ?>>
+<textarea name="message" placeholder="Write message" <?php echo !$is_logged_in ? 'disabled' : ''; ?>></textarea>
+<button type="submit" name="submit_contact" <?php echo !$is_logged_in ? 'disabled' : ''; ?>>Submit</button>
 
-
-<button type="submit" name="submit_contact" disabled>Submit</button>
+</body>
+</html>
 
       </form>
     </div>
@@ -525,6 +549,9 @@ $conn->close();
 
 
 
+    
+
+  
     function showSignInMessage() {
     let confirmSignIn = confirm("Sign in to continue.");
     
@@ -537,18 +564,13 @@ $conn->close();
     let inputs = document.querySelectorAll("input, select, textarea, button");
     inputs.forEach(input => input.disabled = false);
   }
-  function showSignInMessage() {
-    let confirmSignIn = confirm("Sign in to continue.");
-    
-    if (confirmSignIn) {
-      window.location.href = "signin_signup.php"; // Redirect to sign-in page
-    }
-  }
 
-  function enableFields() {
-    let inputs = document.querySelectorAll("input, select, textarea, button");
-    inputs.forEach(input => input.disabled = false);
-  }
+  let userSignedIn = false; // Change this to true if the user is signed in
+
+if (userSignedIn) {
+  enableFields(); // Enable all fields if the user is signed in
+}
   </script>
+
 </body>
 </html>

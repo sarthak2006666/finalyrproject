@@ -82,108 +82,110 @@ $conn->close();
     <title>Sign In & Sign Up</title>
     <style>
     body {
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(135deg,#ffa43b, #ec7216, #d65f12);
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        zoom: 75%;
-    }
+    font-family: 'Arial', sans-serif;
+    background: url('tbg3.jpg') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    
+}
 
-    .container {
-        max-width: 400px;
-        width: 90%;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        padding: 30px 20px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+.container {
+    max-width: 400px;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.2); /* Transparent effect */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 30px 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(5px); /* Blurred background effect */
+}
 
-    .container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    }
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
 
-    h2 {
-        text-align: center;
-        color: black;
-        margin-bottom: 20px;
-        font-size: 24px;
-        font-weight: 600;
-    }
+h2 {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+}
 
-    input[type="email"],
-    input[type="password"] {
-        width: 90%;
-        padding: 12px 15px;
-        margin: 10px 0;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
-        background: #f9f9f9;
-        transition: all 0.3s ease;
-    }
+input[type="email"],
+input[type="password"],
+button {
+    width: 100%;
+    height: 50px; /* Ensuring same height */
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.8); /* Light transparency */
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
 
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #4caf50;
-        background: #fff;
-        outline: none;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-    }
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #4caf50;
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
 
-    button {
-        width: 100%;
-        padding: 12px 15px;
-        margin-top: 15px;
-        background: #ec7216;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+button {
+    background: #ec7216;
+    color: #fff;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-    button:hover {
-        background: #45a049;
-    }
+button:hover {
+    background: #45a049;
+}
 
-    .error, .success {
-        text-align: center;
-        font-size: 14px;
-        margin: 10px 0;
-    }
+.error, .success {
+    text-align: center;
+    font-size: 14px;
+    margin: 10px 0;
+}
 
-    .error {
-        color: red;
-    }
+.error {
+    color: red;
+}
 
-    .success {
-        color: green;
-    }
+.success {
+    color: green;
+}
 
-    .toggle {
-        text-align: center;
-        margin-top: 20px;
-    }
+.toggle {
+    text-align: center;
+    margin-top: 20px;
+}
 
-    .toggle a {
-        color: #ec7216;
-        text-decoration: none;
-        font-weight: 500;
-    }
+.toggle a {
+    color: #ec7216;
+    text-decoration: none;
+    font-weight: 500;
+}
 
-    .toggle a:hover {
-        text-decoration: underline;
-    }
+.toggle a:hover {
+    text-decoration: underline;
+}
+
+
 </style>
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", function() {
             document.body.style.zoom = "75%";
         });

@@ -487,6 +487,7 @@
                 <li><a href="faq.php">FAQ</a></li>
                 <li><a href="contact.php">CONTACT US</a></li>
                 <li><a href="signin_signup.php">SIGN IN</a></li>
+                <li><a href="logout.php">LOG OUT</a></li>
             </ul>
         </nav>
     </header>
