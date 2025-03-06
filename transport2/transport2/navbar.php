@@ -565,6 +565,7 @@
                 <li><a href="faq.php">FAQ</a></li>
                 <li><a href="contact.php">CONTACT US</a></li>
                 <li><a href="signin_signup.php">SIGN IN</a></li>
+                <li><a href="logout.php">LOG OUT</a></li>
             </ul>
         </nav>
     </header>
@@ -572,7 +573,7 @@
   <div class="banner-text">
     <h1>Shree Dev Jom Transport</h1>
     <p>"Delivering excellence in transportation with reliability, efficiency, and a commitment to connecting destinations seamlessly."</p>
-    <a href="#services" class="banner-button">Learn More</a>  
+    <a href="about.php" class="banner-button">Learn More</a>  
 </div>
 </div>
 

@@ -19,7 +19,7 @@
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
-            zoom: 75%;
+            zoom: 100%;
         }
 
         .slider {
@@ -77,6 +77,7 @@
             right: 10px;
         }
     </style>
+    
 </head>
 <body>
     <div class="slider">
